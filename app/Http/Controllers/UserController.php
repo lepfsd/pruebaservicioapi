@@ -127,6 +127,12 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
+        if(!$user->validateInfoUser($request->identification, $request->telephone)) {
+            return response()->json([
+                'message' => 'Invalid request'
+            ], Response::HTTP_CONFLICT);
+        }
+
         $result = $user->balance();
 
         return response()->json([

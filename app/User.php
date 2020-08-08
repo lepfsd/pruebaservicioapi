@@ -109,4 +109,12 @@ class User extends Authenticatable implements JWTSubject
                     ->where('token', $token)
                     ->first();
     } 
+
+    public function validateInfoUser($id, $tel)
+    {
+        return $this->transactions()
+                    ->where('identification', $id)
+                    ->where('telephone', $tel)
+                    ->first();
+    }
 }
