@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\UserWallet;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -64,4 +65,48 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->attributes['password'] = \bcrypt($value);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(UserWallet::class);
+    }
+
+    public function validTransactions()
+    {
+        return $this->transactions()->where('status', 1);
+    }
+
+    public function credit()
+    {
+        return $this->validTransactions()
+                    ->where('type', 'credit')
+                    ->sum('amount');
+    }
+
+    public function debit()
+    {
+        return $this->validTransactions()
+                    ->where('type', 'debit')
+                    ->sum('amount');
+    }
+
+    public function balance()
+    {
+        return $this->credit() - $this->debit();
+    }
+
+    public function allowWithdraw($amount) : bool
+    {
+        return $this->balance() >= $amount;
+    }
+
+    public function confirmPayment($token)
+    {
+        
+        return $this->transactions()
+                    ->where('type', 'debit')
+                    ->where('status', 0)
+                    ->where('token', $token)
+                    ->first();
+    } 
 }
