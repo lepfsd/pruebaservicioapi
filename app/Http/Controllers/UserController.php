@@ -10,6 +10,18 @@ use App\Mail\SendMail;
 
 class UserController extends Controller
 {
+
+     /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('JWT');
+    }
+
+
     public function index()
     {
         $user = auth()->user();
@@ -21,7 +33,6 @@ class UserController extends Controller
         ], Response::HTTP_OK);
         
     }
-
 
     /**
      * store credit/debit transaction
@@ -109,9 +120,10 @@ class UserController extends Controller
     /**
      * check amount avaliable
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function check() 
+    public function check(Request  $request) 
     {
         $user = auth()->user();
 
