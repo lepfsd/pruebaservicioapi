@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendMail;
 
 class UserController extends Controller
 {
@@ -62,7 +64,7 @@ class UserController extends Controller
     public function withdraw(Request $request)
     {
         $user = auth()->user();
-
+        
         if(!$user->allowWithdraw($request->amount)) {
             return response()->json([
                 'message' => 'Invalid request'
@@ -88,6 +90,14 @@ class UserController extends Controller
             ], Response::HTTP_SERVICE_UNAVAILABLE);
            
         }
+
+        $dataEmail = new \stdClass();
+        $dataEmail->token = $token;
+        $dataEmail->amount = $request->amount;
+        $dataEmail->description = $request->description;
+        $dataEmail->status = 'PENDING';
+        $dataEmail->name = auth()->user()->name;
+        Mail::to(auth()->user()->email)->send(new SendMail($dataEmail));
 
         return response()->json([
             'status' => 'pending',
