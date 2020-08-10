@@ -34,6 +34,19 @@ class UserController extends Controller
         
     }
 
+    public function show($id)
+    {
+        
+        $user = auth()->user();
+
+        $transaction = $user->transaction($id)->get();
+        
+        return response()->json([
+            'transaction' => $transaction
+        ], Response::HTTP_OK);
+        
+    }
+
     /**
      * store credit/debit transaction
      *

@@ -35,6 +35,7 @@ Route::group([
 });
 
 Route::get('transactions', 'UserController@index');
+Route::get('transactions/{id}', 'UserController@show');
 Route::post('credit', 'UserController@store');
 Route::post('debit', 'UserController@withdraw');
 Route::post('balance', 'UserController@check');
